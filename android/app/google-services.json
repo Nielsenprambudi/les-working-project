@@ -1,0 +1,130 @@
+{
+  "project_info": {
+    "project_number": "1017733613480",
+    "project_id": "api-sebis-les",
+    "storage_bucket": "api-sebis-les.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017733613480:android:0703fd250e95ccd4923f9d",
+        "android_client_info": {
+          "package_name": "com.bisales"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1017733613480-4n30oh61krrvcep4hjuml0jpc2c40f1f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bisales",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1017733613480-ihrvvo2foon7u1uenc03g30q7or73dbs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2FP_aGaby7tpjPsYD5Nwj_ewDfw6_C1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017733613480-ihrvvo2foon7u1uenc03g30q7or73dbs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1017733613480-grdbge16ov9q8ua0qic2e1mfvbdj71rm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.sebisTutor"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017733613480:android:da21f934ad51de97923f9d",
+        "android_client_info": {
+          "package_name": "com.sebistutor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1017733613480-61dro6g3ae3uh5b95jpn61m55uguoaf1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sebistutor",
+            "certificate_hash": "002ec3cee7ad5e8c6a62aad1644fa5743aa471ca"
+          }
+        },
+        {
+          "client_id": "1017733613480-7jvruhn0goenkim4o9k0anrdvf6h9kcr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sebistutor",
+            "certificate_hash": "8c9659e04e71578703dbf338ec9ba4c5f6f91ad3"
+          }
+        },
+        {
+          "client_id": "1017733613480-eqaa2gvdtgllvt7u8ioaifnjf76g1gqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sebistutor",
+            "certificate_hash": "7f7675943db6f04c3b747214c42a03b5947849e7"
+          }
+        },
+        {
+          "client_id": "1017733613480-kuk0lh0o5etn42r1mht8ma1bcg33jf38.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sebistutor",
+            "certificate_hash": "f3e59a5ffb3f10bf2f4cbfac7826595a8b2aa6a1"
+          }
+        },
+        {
+          "client_id": "1017733613480-ubj8115lp1t7nug6ahabvo1v4456h5io.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sebistutor",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1017733613480-ihrvvo2foon7u1uenc03g30q7or73dbs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2FP_aGaby7tpjPsYD5Nwj_ewDfw6_C1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017733613480-ihrvvo2foon7u1uenc03g30q7or73dbs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1017733613480-grdbge16ov9q8ua0qic2e1mfvbdj71rm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.sebisTutor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
