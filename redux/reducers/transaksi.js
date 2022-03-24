@@ -24,6 +24,10 @@ const initialState = {
   isDetailGetTransaksi: false,
   dataDetailGetTransaksi: [],
   data: [],
+  totalData: 0,
+  limit: 10,
+  currentPage: 1,
+  nextPage: 0,
 };
 
 export default (state = initialState, action) => {
@@ -115,13 +119,17 @@ export default (state = initialState, action) => {
       };
     }
     case 'GET_TRANSAKSI_FULFILLED': {
+      state.dataGetTransaksi.push(...action.payload.data.data);
       return {
         ...state,
         isLoadingGetTransaksi: false,
         isErrorGetTransaksi: false,
         isGetTransaksi: true,
-        pagination: action.payload.data,
-        dataGetTransaksi: action.payload.data.data,
+        dataGetTransaksi: state.dataGetTransaksi,
+        limit: action.payload.data.limitPage,
+        totalData: action.payload.data.totalData,
+        currentPage: action.payload.data.currentPage,
+        nextPage: action.payload.data.nextPage,
       };
     }
     case 'DETAIL_GET_TRANSAKSI_PENDING': {
@@ -152,7 +160,10 @@ export default (state = initialState, action) => {
         ...state,
         dataGetTransaksi: [],
         dataDetailGetTransaksi: [],
-        paginattion: [],
+        totalData: 0,
+        limit: 10,
+        currentPage: 1,
+        nextPage: 0,
         isLoadingGetTransaksi: false,
         isErrorGetTransaksi: false,
         isGetTransaksi: false,

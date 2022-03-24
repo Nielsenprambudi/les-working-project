@@ -78,6 +78,12 @@ export default (state = initialState, action) => {
         data: action.payload,
       };
     }
+    case 'CART_CONFIRM_ADD': {
+      return {
+        ...state,
+        dataConfirmList: action.payload,
+      };
+    }
     case 'CART_SUM': {
       return {
         ...state,
@@ -155,7 +161,7 @@ export default (state = initialState, action) => {
         isErrorCartAdd: false,
         isCartAdd: true,
         data: action.payload.data.data,
-        alertMsgSuccess: action.payload.data.message,
+        alertMsgSuccess: 'Berhasil menambahkan jadwal les...',
       };
     }
     case 'ADD_SCHEDULE_PENDING': {
@@ -221,6 +227,16 @@ export default (state = initialState, action) => {
         isCartAdd: false,
       };
     }
+    case 'CLEAR_ADD_SCHEDULE': {
+      return {
+        ...state,
+        isLoadingAddSchedule: false,
+        isErrorAddSchedule: false,
+        isAddSchedule: false,
+        alertMsgError: '',
+        alertMsgSuccess: '',
+      };
+    }
     case 'CLEAR_REQUEST': {
       return {
         ...state,
@@ -249,9 +265,17 @@ export default (state = initialState, action) => {
         alertMsgSuccess: '',
         data: [],
         dataConfirm: [],
+        dataConfirmList: [],
         subtotal: 0,
         dataSchedule: '',
         minimumPurchase: 0,
+      };
+    }
+    case 'CLEAR_CONFIRM_CART': {
+      return {
+        ...state,
+        dataConfirmList: [],
+        // subtotal: 0,
       };
     }
     case 'CLEAR_DELETE': {

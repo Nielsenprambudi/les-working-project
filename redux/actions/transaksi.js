@@ -13,11 +13,9 @@ export default {
     type: 'TOP_UP_COIN',
     payload: http.post('v1/topup-coin', data),
   }),
-  getTransaksi: (token, page, limit) => ({
+  getTransaksi: (page, limit) => ({
     type: 'GET_TRANSAKSI',
-    payload: http(token).get(
-      `api/student/history/transaction?page=${page}&limit=${limit}`,
-    ),
+    payload: http.get(`v1/schedule/history?page=${page}&limit=${limit}`),
   }),
   getDetailTransaksi: (token, id) => ({
     type: 'DETAIL_GET_TRANSAKSI',

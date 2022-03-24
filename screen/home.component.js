@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Share,
+  FlatList,
 } from 'react-native';
 import {
   Button,
@@ -19,16 +20,22 @@ import {
   Text,
   Card,
   Tooltip,
+  Tab,
+  TabView,
+  TabBar,
+  Spinner,
 } from '@ui-kitten/components';
 import {HeaderComponent} from '../component/header.component';
 import {PromoComponent} from '../component/promo.component';
 import {TopupComponent} from '../component/topup.component';
 import Carousel from 'react-native-snap-carousel';
 import {FloatingAction} from 'react-native-floating-action';
-import {FORMATPRICE} from '../helpers/constant';
+import {FORMATPRICE, grey, greydark} from '../helpers/constant';
 import berandaAction from './../redux/actions/beranda';
 import studentAction from './../redux/actions/student';
+import riwayatAction from './../redux/actions/riwayat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {DetailLesHistoryComponent} from '../component/detailLesHistory.component';
 import http from '../helpers/http';
 import {blue, green} from '../helpers/constant';
 import publicUrl from '../publicUrl';
@@ -40,9 +47,22 @@ const height = Dimensions.get('window').height;
 export const HomeScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const {firstWalk, dataSlider} = useSelector(state => state.beranda);
+  const {
+    isLoadingRiwayat,
+    isErrorRiwayat,
+    isRiwayat,
+    dataRiwayat,
+    limit,
+    totalData,
+    currentPage,
+    nextPage,
+  } = useSelector(state => state.riwayat);
   const auth = useSelector(state => state.auth);
   const {data, isStudent} = useSelector(state => state.student);
   const [tabBar, setTabBar] = useState(0);
+  const [orderIndex, setOrderIndex] = useState(0);
+  const [idHistoryLes, setIdHistoryLes] = useState('');
+  const [visibleHistoryLes, setVisibleHistoryLes] = useState(false);
   const navigateDetails = () => {
     navigation.navigate('Login');
   };
@@ -53,6 +73,8 @@ export const HomeScreen = ({navigation}) => {
       http.defaults.headers.common.Authorization = 'Bearer ' + auth?.token;
       dispatch(studentAction.getStudent());
       dispatch(studentAction.getStudentDetail());
+      dispatch(riwayatAction.clearLes());
+      dispatch(riwayatAction.getRiwayat(1, 10));
     }
     if (firstWalk === null) {
       dispatch(berandaAction.setWalkthrough(true));
@@ -137,8 +159,91 @@ export const HomeScreen = ({navigation}) => {
     setTabBar(e);
   };
 
+  const doRefreshRiwayat = () => {
+    dispatch(riwayatAction.clearLes());
+    dispatch(riwayatAction.getRiwayat(1, 10));
+  };
+
+  const loadMoreRiwayat = () => {
+    if (dataRiwayat && dataRiwayat.length < totalData) {
+      dispatch(riwayatAction.getRiwayat(nextPage, limit));
+    }
+  };
+
+  const RenderTransaksi = ({item}) => (
+    <Layout
+      style={[
+        global.marginHorizontalDefault,
+        {flexDirection: 'row', paddingVertical: width * 0.03},
+      ]}>
+      <Image
+        source={require('./../assets/coin.png')}
+        style={{
+          width: width * 0.2,
+          height: width * 0.2,
+        }}
+        resizeMode="cover"
+      />
+      <Layout style={{paddingLeft: width * 0.05}}>
+        <Text
+          category="p1"
+          style={[global.normalFont, {fontWeight: 'bold', color: blue}]}>
+          ID transaksi
+        </Text>
+        <Text category="c1" style={[global.normalFont, {color: greydark}]}>
+          Status Transaksi :
+        </Text>
+        <Text category="c1" style={[global.normalFont, {color: grey}]}>
+          Hari ini
+        </Text>
+      </Layout>
+    </Layout>
+  );
+
+  const RenderRiwayat = ({item}) => (
+    <TouchableOpacity
+      onPress={() => {
+        setIdHistoryLes(item?.scheduleId);
+        setVisibleHistoryLes(true);
+      }}
+      style={[
+        global.marginHorizontalDefault,
+        {flexDirection: 'row', paddingVertical: width * 0.03},
+      ]}>
+      <Image
+        source={require('./../assets/sebis_les.png')}
+        style={{
+          width: width * 0.2,
+          height: width * 0.2,
+        }}
+        resizeMode="cover"
+      />
+      <Layout style={{paddingLeft: width * 0.05}}>
+        <Text
+          category="p1"
+          style={[global.normalFont, {fontWeight: 'bold', color: blue}]}>
+          {item?.name}
+        </Text>
+        <Text category="c1" style={[global.normalFont, {color: greydark}]}>
+          {item?.lesStatus}
+        </Text>
+        {/* <Text category="c1" style={[global.normalFont, {color: grey}]}>
+          {item?.date}
+        </Text> */}
+      </Layout>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={{flex: 1}}>
+      <DetailLesHistoryComponent
+        visible={visibleHistoryLes}
+        idHistoryLes={idHistoryLes}
+        dismiss={() => {
+          setIdHistoryLes('');
+          setVisibleHistoryLes(false);
+        }}
+      />
       <HeaderComponent auth={'login'} setTab={e => setBar(e)} />
       <Divider />
       {tabBar === 0 && (
@@ -374,6 +479,97 @@ export const HomeScreen = ({navigation}) => {
           <PromoComponent />
           <PromoComponent />
         </ScrollView>
+      )}
+      {tabBar == 2 && (
+        <Layout>
+          <TabBar
+            selectedIndex={orderIndex}
+            onSelect={index => setOrderIndex(index)}
+            indicatorStyle={{backgroundColor: blue}}>
+            <Tab
+              title={evaprops => (
+                <Text
+                  {...evaprops}
+                  category="c1"
+                  style={[
+                    global.normalFont,
+                    {color: orderIndex === 0 ? blue : greydark},
+                  ]}>
+                  Riwayat Les
+                </Text>
+              )}
+            />
+            <Tab
+              title={evaprops => (
+                <Text
+                  {...evaprops}
+                  category="c1"
+                  style={[
+                    global.normalFont,
+                    {color: orderIndex === 1 ? blue : greydark},
+                  ]}>
+                  Riwayat Transaksi
+                </Text>
+              )}
+            />
+            <Tab
+              title={evaprops => (
+                <Text
+                  {...evaprops}
+                  category="c1"
+                  style={[
+                    global.normalFont,
+                    {color: orderIndex === 2 ? blue : greydark},
+                  ]}>
+                  Dalam Proses
+                </Text>
+              )}
+            />
+          </TabBar>
+          {orderIndex === 0 && (
+            <Layout style={{height: height, paddingTop: width * 0.05}}>
+              <FlatList
+                data={dataRiwayat}
+                renderItem={RenderRiwayat}
+                keyExtractor={(item, index) => index}
+                onEndReachedThreshold={0.2}
+                onEndReached={loadMoreRiwayat}
+                onRefresh={doRefreshRiwayat}
+                refreshing={false}
+                ListFooterComponent={
+                  isLoadingRiwayat && (
+                    <Layout
+                      style={{
+                        marginHorizontal: width * 0.5,
+                        marginVertical: width * 0.25,
+                      }}>
+                      <Spinner size="large" />
+                    </Layout>
+                  )
+                }
+                ListEmptyComponent={
+                  !isLoadingRiwayat && (
+                    <Layout>
+                      <Image
+                        source={require('./../assets/sebby-laptop.png')}
+                        style={{width: width * 0.06, height: width * 0.06}}
+                        resizeMode="cover"
+                      />
+                      <Text
+                        category="h5"
+                        style={[
+                          global.titleFont,
+                          {textAlign: 'center', fontWeight: 'bold'},
+                        ]}>
+                        Pesan Les, Yukk!
+                      </Text>
+                    </Layout>
+                  )
+                }
+              />
+            </Layout>
+          )}
+        </Layout>
       )}
 
       {auth?.token && (

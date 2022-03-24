@@ -15,7 +15,7 @@ export default {
   }),
   cartSum: data => ({
     type: 'CART_SUM',
-    payload: data.reduce((a, b) => a + b, 0),
+    payload: data,
   }),
   addCart: data => ({
     type: 'CART_ADD',
@@ -40,8 +40,14 @@ export default {
   clear: () => ({
     type: 'CLEAR_CART',
   }),
+  clearConfirmCart: () => ({
+    type: 'CLEAR_CONFIRM_CART',
+  }),
   clearAdd: () => ({
     type: 'CLEAR_ADD',
+  }),
+  clearAddSchedule: () => ({
+    type: 'CLEAR_ADD_SCHEDULE',
   }),
   clearRequest: () => ({
     type: 'CLEAR_REQUEST',

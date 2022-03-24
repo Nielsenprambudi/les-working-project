@@ -1,11 +1,13 @@
 import http from '../../helpers/http';
 
 export default {
-  getRiwayat: (token, page, limit) => ({
+  getRiwayat: (page, limit) => ({
     type: 'RIWAYAT_GET',
-    payload: http(token).get(
-      `api/student/history/les?page=${page}&limit=${limit}`,
-    ),
+    payload: http.get(`v1/schedule/history?page=${page}&limit=${limit}`),
+  }),
+  getRiwayatDetail: id => ({
+    type: 'RIWAYAT_GET_DETAIL',
+    payload: http.get(`v1/schedule/history-detail/${id}`),
   }),
   getRiwayatPesanan: (token, page, limit) => ({
     type: 'RIWAYAT_PESANAN',
@@ -15,7 +17,7 @@ export default {
   }),
   addRating: (token, id, schedule, data) => ({
     type: 'ADD_RATING',
-    payload: http(token).patch(`api/rating/${id}/${schedule}`, data),,
+    payload: http(token).patch(`api/rating/${id}/${schedule}`, data),
   }),
   scheduleId: data => ({
     type: 'SCHEDULEID',
@@ -25,10 +27,13 @@ export default {
     type: 'CLEAR_SCHEDULE',
   }),
   clearAdd: () => ({
-    type: 'CLEAR_ADD',,
+    type: 'CLEAR_ADD',
   }),
   clearLes: () => ({
     type: 'CLEAR_RIWAYAT_LES',
+  }),
+  clearLesDetail: () => ({
+    type: 'CLEAR_RIWAYAT_DETAIL',
   }),
   clearPesanan: () => ({
     type: 'CLEAR_RIWAYAT_PESANAN',

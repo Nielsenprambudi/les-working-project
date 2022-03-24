@@ -186,30 +186,40 @@ export const CartScreen = ({navigation}) => {
 
   const chooseItem = (index, status, teacher) => {
     let dataCart = data;
-    let dataSetCheckoutSum = [];
-    let dataConfirm = [];
     dataCart[index].check = status === false ? true : false;
     dataCart[index]?.cartItems.forEach((item, i) => {
       if (item?.status === 'accept') {
         item.check = status === false ? true : false;
         item.teacher = teacher;
-        dataConfirmCartList.push(item);
-        dataSetCheckoutSum.push(item?.price);
       }
     });
-    let filterParent = dataCart.filter(x => x.cartItems === true);
-    console.log('check filter parent', filterParent);
-    let dataConfirmCartList = dataCart[index].cartItems.filter(
-      x => x.check === true,
-    );
-    dispatch(cartAction.cartConfirmAdd(dataConfirmCartList));
+    let checkCarts = dataCart[index]?.cartItems.filter(x => x.check === true);
+    let totalItemCarts = [];
+    let totalCarts = [];
+    checkCarts.forEach((price, x) => {
+      totalItemCarts.push(price.price);
+    });
+    if (checkCarts.length === 0) {
+      dataCart[index].total = 0;
+    } else {
+      dataCart[index].total = totalItemCarts.reduce((a, b) => a + b, 0);
+    }
+    let checkFilter = dataCart.filter(x => {
+      if (x.check === true) {
+        return x.cartItems.filter(y => y.check === true);
+      }
+    });
+    checkFilter.forEach((tot, z) => {
+      totalCarts.push(tot.total);
+    });
+    setDataCheckout(checkFilter);
+    // dispatch(cartAction.cartConfirmAdd(dataConfirmCartList));
     dispatch(cartAction.cartCheck(dataCart));
-    dispatch(cartAction.cartSum(dataSetCheckoutSum));
+    dispatch(cartAction.cartSum(totalCarts.reduce((a, b) => a + b, 0)));
   };
 
   const chooseItemCart = (cartIndex, index, status, teacher) => {
     let dataCart = data;
-    let dataSetCheckoutSum = [];
     let carts = dataCart[index].cartItems;
     carts.forEach((val, i) => {
       if (i === cartIndex) {
@@ -218,14 +228,34 @@ export const CartScreen = ({navigation}) => {
         } else {
           val.check = true;
           val.teacher = teacher;
-          // dataSetCheckout.push(val?.cartItemId);
-          // dataSetCheckoutSum.push(val?.price);
+          dataCart[index].check = true;
         }
       }
     });
-    // setDataCheckout(dataSetCheckout);
+    let checkCarts = carts.filter(x => x.check === true);
+    let totalItemCarts = [];
+    let totalCarts = [];
+    checkCarts.forEach((price, z) => {
+      totalItemCarts.push(price.price);
+    });
+    if (checkCarts.length === 0) {
+      dataCart[index].check = false;
+      dataCart[index].total = 0;
+    } else {
+      dataCart[index].check = true;
+      dataCart[index].total = totalItemCarts.reduce((a, b) => a + b, 0);
+    }
+    let checkFilter = dataCart.filter(x => {
+      if (x.check === true) {
+        return x.cartItems.filter(y => y.check === true);
+      }
+    });
+    checkFilter.forEach((tot, z) => {
+      totalCarts.push(tot.total);
+    });
+    setDataCheckout(checkFilter);
     dispatch(cartAction.cartCheck(dataCart));
-    dispatch(cartAction.cartSum(dataSetCheckoutSum));
+    dispatch(cartAction.cartSum(totalCarts.reduce((a, b) => a + b, 0)));
   };
 
   const renderCart = ({item, index}) => (
@@ -528,7 +558,9 @@ export const CartScreen = ({navigation}) => {
   );
 
   const addSchedule = () => {
-    dispatch(cartAction.addSchedule(dataCheckout));
+    // dispatch(cartAction.addSchedule(dataCheckout));
+    dispatch(cartAction.cartConfirmAdd(dataCheckout));
+    navigation.navigate('CartCheckout');
   };
 
   return (
