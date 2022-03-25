@@ -9,6 +9,16 @@ export default {
     type: 'RIWAYAT_GET_DETAIL',
     payload: http.get(`v1/schedule/history-detail/${id}`),
   }),
+  getRiwayatCoin: (page, limit) => ({
+    type: 'RIWAYAT_COIN_GET',
+    payload: http.get(
+      `v1/transaction-coin/history?page=${page}&limit=${limit}`,
+    ),
+  }),
+  getRiwayatDetailCoin: id => ({
+    type: 'RIWAYAT_COIN_GET_DETAIL',
+    payload: http.get(`v1/transaction-coin/history-detail/${id}`),
+  }),
   getRiwayatPesanan: (token, page, limit) => ({
     type: 'RIWAYAT_PESANAN',
     payload: http(token).get(
@@ -34,6 +44,12 @@ export default {
   }),
   clearLesDetail: () => ({
     type: 'CLEAR_RIWAYAT_DETAIL',
+  }),
+  clearCoin: () => ({
+    type: 'CLEAR_RIWAYAT_COIN',
+  }),
+  clearCoinDetail: () => ({
+    type: 'CLEAR_RIWAYAT_COIN_DETAIL',
   }),
   clearPesanan: () => ({
     type: 'CLEAR_RIWAYAT_PESANAN',

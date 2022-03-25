@@ -7,11 +7,19 @@ const initialState = {
   isLoadingRiwayatDetail: false,
   isErrorRiwayatDetail: false,
   isRiwayatDetail: false,
+  isLoadingRiwayatCoin: false,
+  isErrorRiwayatCoin: false,
+  isRiwayatCoin: false,
+  isLoadingRiwayatCoinDetail: false,
+  isErrorRiwayatCoinDetail: false,
+  isRiwayatCoinDetail: false,
   isLoadingRiwayatPesanan: false,
   isErrorRiwayatPesanan: false,
   isRiwayatPesanan: false,
   dataRiwayatDetail: null,
+  dataRiwayatCoinDetail: null,
   dataRiwayat: [],
+  dataRiwayatCoin: [],
   dataPesanan: [],
   isAddRating: false,
   isLoadingAddRating: false,
@@ -22,6 +30,10 @@ const initialState = {
   limit: 10,
   currentPage: 1,
   nextPage: 0,
+  totalDataCoin: 0,
+  limitCoin: 10,
+  currentPageCoin: 1,
+  nextPageCoin: 0,
 };
 
 export default (state = initialState, action) => {
@@ -75,6 +87,57 @@ export default (state = initialState, action) => {
         isErrorRiwayatDetail: false,
         isRiwayatDetail: true,
         dataRiwayatDetail: action.payload.data.data,
+      };
+    }
+    case 'RIWAYAT_COIN_GET_PENDING': {
+      return {
+        ...state,
+        isLoadingRiwayatCoin: true,
+      };
+    }
+    case 'RIWAYAT_COIN_GET_REJECTED': {
+      return {
+        ...state,
+        isLoadingRiwayatCoin: false,
+        isErrorRiwayatCoin: true,
+        isRiwayatCoin: false,
+      };
+    }
+    case 'RIWAYAT_COIN_GET_FULFILLED': {
+      state.dataRiwayatCoin.push(...action.payload.data.data);
+      return {
+        ...state,
+        isLoadingRiwayatCoin: false,
+        isErrorRiwayatCoin: false,
+        isRiwayatCoin: true,
+        dataRiwayatCoin: state.dataRiwayatCoin,
+        limitCoin: action.payload.data.limitPage,
+        totalDataCoin: action.payload.data.totalData,
+        currentPageCoin: action.payload.data.currentPage,
+        nextPageCoin: action.payload.data.nextPage,
+      };
+    }
+    case 'RIWAYAT_COIN_GET_DETAIL': {
+      return {
+        ...state,
+        isLoadingRiwayatCoinDetail: true,
+      };
+    }
+    case 'RIWAYAT_COIN_GET_DETAIL_REJECTED': {
+      return {
+        ...state,
+        isLoadingRiwayatCoinDetail: false,
+        isErrorRiwayatCoinDetail: true,
+        isRiwayatCoinDetail: false,
+      };
+    }
+    case 'RIWAYAT_COIN_GET_DETAIL_FULFILLED': {
+      return {
+        ...state,
+        isLoadingRiwayatCoinDetail: false,
+        isErrorRiwayatCoinDetail: false,
+        isRiwayatCoinDetail: true,
+        dataRiwayatCoinDetail: action.payload.data.data,
       };
     }
     case 'ADD_RATING_PENDING': {
@@ -157,6 +220,28 @@ export default (state = initialState, action) => {
         isErrorRiwayatDetail: false,
         isRiwayatDetail: false,
         dataRiwayatDetail: null,
+      };
+    }
+    case 'CLEAR_RIWAYAT_COIN': {
+      return {
+        ...state,
+        isLoadingRiwayatCoin: false,
+        isErrorRiwayatCoin: false,
+        isRiwayatCoin: false,
+        dataRiwayatCoin: [],
+        totalDataCoin: 0,
+        limitCoin: 10,
+        currentPageCoin: 1,
+        nextPageCoin: 0,
+      };
+    }
+    case 'CLEAR_RIWAYAT_COIN_DETAIL': {
+      return {
+        ...state,
+        isLoadingRiwayatCoinDetail: false,
+        isErrorRiwayatCoinDetail: false,
+        isRiwayatCoinDetail: false,
+        dataRiwayatCoinDetail: null,
       };
     }
     case 'CLEAR_RIWAYAT_PESANAN': {

@@ -17,7 +17,12 @@ const global = require('../styles/global');
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-export const DetailLesHistoryComponent = ({visible, idHistoryLes, dismiss}) => {
+export const DetailLesHistoryComponent = ({
+  visible,
+  idHistoryLes,
+  dismiss,
+  navigateHelp,
+}) => {
   const dispatch = useDispatch();
   const {dataRiwayatDetail} = useSelector(state => state.riwayat);
 
@@ -52,21 +57,25 @@ export const DetailLesHistoryComponent = ({visible, idHistoryLes, dismiss}) => {
         ) : (
           <Avatar size="large" source={require('./../assets/login.png')} />
         )}
-        <Layout style={{paddingLeft: width * 0.03}}>
+        <Layout style={{paddingLeft: width * 0.03, flexDirection: 'column'}}>
           <Text
             category="p1"
             style={[global.normalFont, {fontWeight: 'bold', color: blue}]}>
             {dataRiwayatDetail?.teacher?.name}
           </Text>
-          <Text category="c1" style={[global.captionFont, {color: greydark}]}>
+          <Text
+            category="c1"
+            style={[global.captionFont, {color: greydark, width: width * 0.8}]}>
             {dataRiwayatDetail?.teacher?.aboutTeacher}
           </Text>
         </Layout>
+      </Layout>
+      <Layout style={{paddingHorizontal: width * 0.05}}>
         <Text
           category="p1"
           style={[
             global.normalFont,
-            {fontWeight: 'bold', color: grey, paddingVertical: width * 0.04},
+            {fontWeight: 'bold', color: grey, paddingVertical: width * 0.02},
           ]}>
           Detail
         </Text>
@@ -85,6 +94,39 @@ export const DetailLesHistoryComponent = ({visible, idHistoryLes, dismiss}) => {
           </Text>
         </Layout>
       </Layout>
+      <Layout style={{paddingHorizontal: width * 0.05}}>
+        <Text
+          category="p1"
+          style={[
+            global.normalFont,
+            {fontWeight: 'bold', color: grey, paddingVertical: width * 0.02},
+          ]}>
+          Status :
+        </Text>
+      </Layout>
+      <TouchableOpacity
+        onPress={() => navigateHelp}
+        style={[
+          global.defaultButton,
+          {
+            backgroundColor: '#FFFFFF',
+            borderWidth: 2,
+            borderColor: blue,
+            borderRadius: width * 0.04,
+            marginVertical: width * 0.1,
+            marginHorizontal: width * 0.1,
+          },
+        ]}>
+        <Text
+          category="p1"
+          style={[
+            global.normalFont,
+            global.blueFontColor,
+            {fontWeight: 'bold', textAlign: 'center', padding: width * 0.02},
+          ]}>
+          Bantuan
+        </Text>
+      </TouchableOpacity>
     </Modal>
   );
 };

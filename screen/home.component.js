@@ -56,6 +56,14 @@ export const HomeScreen = ({navigation}) => {
     totalData,
     currentPage,
     nextPage,
+    isLoadingRiwayatCoin,
+    isErrorRiwayatCoin,
+    isRiwayatCoin,
+    dataRiwayatCoin,
+    limitCoin,
+    totalDataCoin,
+    currentPageCoin,
+    nextPageCoin,
   } = useSelector(state => state.riwayat);
   const auth = useSelector(state => state.auth);
   const {data, isStudent} = useSelector(state => state.student);
@@ -69,15 +77,20 @@ export const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     dispatch(berandaAction.getSliders());
+    dispatch(riwayatAction.clearLes());
+    dispatch(riwayatAction.clearCoin());
     if (auth?.token) {
       http.defaults.headers.common.Authorization = 'Bearer ' + auth?.token;
       dispatch(studentAction.getStudent());
       dispatch(studentAction.getStudentDetail());
-      dispatch(riwayatAction.clearLes());
       dispatch(riwayatAction.getRiwayat(1, 10));
+      dispatch(riwayatAction.getRiwayatCoin(1, 10));
     }
     if (firstWalk === null) {
       dispatch(berandaAction.setWalkthrough(true));
+    }
+    if (firstWalk === true) {
+      dispatch(berandaAction.setWalkthrough(false));
     }
   }, [dispatch, auth, firstWalk]);
 
@@ -170,7 +183,18 @@ export const HomeScreen = ({navigation}) => {
     }
   };
 
-  const RenderTransaksi = ({item}) => (
+  const doRefreshRiwayatCoin = () => {
+    dispatch(riwayatAction.clearCoin());
+    dispatch(riwayatAction.getRiwayatCoin(1, 10));
+  };
+
+  const loadMoreRiwayatCoin = () => {
+    if (dataRiwayatCoin && dataRiwayatCoin.length < totalDataCoin) {
+      dispatch(riwayatAction.getRiwayatCoin(nextPageCoin, limitCoin));
+    }
+  };
+
+  const RenderRiwayatCoin = ({item}) => (
     <Layout
       style={[
         global.marginHorizontalDefault,
@@ -184,14 +208,14 @@ export const HomeScreen = ({navigation}) => {
         }}
         resizeMode="cover"
       />
-      <Layout style={{paddingLeft: width * 0.05}}>
+      <Layout style={{paddingLeft: width * 0.05, width: width * 0.7}}>
         <Text
           category="p1"
           style={[global.normalFont, {fontWeight: 'bold', color: blue}]}>
-          ID transaksi
+          ID transaksi : {item?.transactionId}
         </Text>
         <Text category="c1" style={[global.normalFont, {color: greydark}]}>
-          Status Transaksi :
+          Status Transaksi : {item?.status}
         </Text>
         <Text category="c1" style={[global.normalFont, {color: grey}]}>
           Hari ini
@@ -242,6 +266,13 @@ export const HomeScreen = ({navigation}) => {
         dismiss={() => {
           setIdHistoryLes('');
           setVisibleHistoryLes(false);
+          dispatch(riwayatAction.clearLesDetail());
+        }}
+        navigateHelp={() => {
+          navigation.navigate('Help');
+          setIdHistoryLes('');
+          setVisibleHistoryLes(false);
+          dispatch(riwayatAction.clearLesDetail());
         }}
       />
       <HeaderComponent auth={'login'} setTab={e => setBar(e)} />
@@ -549,6 +580,54 @@ export const HomeScreen = ({navigation}) => {
                 }
                 ListEmptyComponent={
                   !isLoadingRiwayat && (
+                    <Layout>
+                      <Image
+                        source={require('./../assets/sebby-laptop.png')}
+                        style={{
+                          width: width * 0.5,
+                          height: width * 0.5,
+                          marginHorizontal: width * 0.25,
+                          marginTop: width * 0.25,
+                        }}
+                        resizeMode="cover"
+                      />
+                      <Text
+                        category="h5"
+                        style={[
+                          global.titleFont,
+                          {textAlign: 'center', fontWeight: 'bold'},
+                        ]}>
+                        Pesan Les, Yukk!
+                      </Text>
+                    </Layout>
+                  )
+                }
+              />
+            </Layout>
+          )}
+          {orderIndex === 1 && (
+            <Layout style={{height: height, paddingTop: width * 0.05}}>
+              <FlatList
+                data={dataRiwayatCoin}
+                renderItem={RenderRiwayatCoin}
+                keyExtractor={(item, index) => index}
+                onEndReachedThreshold={0.2}
+                onEndReached={loadMoreRiwayatCoin}
+                onRefresh={doRefreshRiwayatCoin}
+                refreshing={false}
+                ListFooterComponent={
+                  isLoadingRiwayatCoin && (
+                    <Layout
+                      style={{
+                        marginHorizontal: width * 0.5,
+                        marginVertical: width * 0.25,
+                      }}>
+                      <Spinner size="large" />
+                    </Layout>
+                  )
+                }
+                ListEmptyComponent={
+                  !isLoadingRiwayatCoin && (
                     <Layout>
                       <Image
                         source={require('./../assets/sebby-laptop.png')}
