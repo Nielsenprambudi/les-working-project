@@ -21,7 +21,7 @@ import {
   TopNavigation,
   TopNavigationAction,
 } from '@ui-kitten/components';
-import {orange, blue, green} from '../helpers/constant';
+import {orange, blue, green, FORMATPRICE} from '../helpers/constant';
 import {ModalComponent} from '../component/modal.component';
 import Carousel from 'react-native-snap-carousel';
 import berandaAction from '../redux/actions/beranda';
@@ -152,7 +152,7 @@ export const FavTutorScreen = ({route, navigation}) => {
             resizeMode="cover"
           />
           <Text style={[global.normalFont, {paddingHorizontal: width * 0.02}]}>
-            {item?.teacher?.coin}
+            {FORMATPRICE(item?.teacher?.coin)}
           </Text>
         </Layout>
       </Layout>

@@ -405,7 +405,7 @@ export const CartCheckoutScreen = ({navigation}) => {
           <Spinner size="large" />
         </Layout>
       ) : (
-        <Layout style={{flexDirection: 'row'}}>
+        <Layout style={{flexDirection: 'row', backgroundColor: grey}}>
           <Layout style={{padding: width * 0.05, backgroundColor: grey}}>
             <Layout style={{flexDirection: 'row', backgroundColor: grey}}>
               <Text category="p1" style={[global.normalFont]}>
@@ -415,7 +415,11 @@ export const CartCheckoutScreen = ({navigation}) => {
                 category="p1"
                 style={[
                   global.normalFont,
-                  {paddingLeft: width * 0.18, color: blue},
+                  {
+                    paddingLeft: width * 0.18,
+                    paddingRight: width * 0.12,
+                    color: blue,
+                  },
                 ]}>
                 {FORMATPRICE(data?.coin - subtotal)}
               </Text>

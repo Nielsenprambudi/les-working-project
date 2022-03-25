@@ -36,6 +36,7 @@ import studentAction from './../redux/actions/student';
 import riwayatAction from './../redux/actions/riwayat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DetailLesHistoryComponent} from '../component/detailLesHistory.component';
+import {DetailCoinHistoryComponent} from '../component/detailCoinHistory.component';
 import http from '../helpers/http';
 import {blue, green} from '../helpers/constant';
 import publicUrl from '../publicUrl';
@@ -70,7 +71,9 @@ export const HomeScreen = ({navigation}) => {
   const [tabBar, setTabBar] = useState(0);
   const [orderIndex, setOrderIndex] = useState(0);
   const [idHistoryLes, setIdHistoryLes] = useState('');
+  const [idHistoryCoin, setIdHistoryCoin] = useState('');
   const [visibleHistoryLes, setVisibleHistoryLes] = useState(false);
+  const [visibleHistoryCoin, setVisibleHistoryCoin] = useState(false);
   const navigateDetails = () => {
     navigation.navigate('Login');
   };
@@ -195,7 +198,11 @@ export const HomeScreen = ({navigation}) => {
   };
 
   const RenderRiwayatCoin = ({item}) => (
-    <Layout
+    <TouchableOpacity
+      onPress={() => {
+        setIdHistoryCoin(item?.transactionId);
+        setVisibleHistoryCoin(true);
+      }}
       style={[
         global.marginHorizontalDefault,
         {flexDirection: 'row', paddingVertical: width * 0.03},
@@ -221,7 +228,7 @@ export const HomeScreen = ({navigation}) => {
           Hari ini
         </Text>
       </Layout>
-    </Layout>
+    </TouchableOpacity>
   );
 
   const RenderRiwayat = ({item}) => (
@@ -273,6 +280,15 @@ export const HomeScreen = ({navigation}) => {
           setIdHistoryLes('');
           setVisibleHistoryLes(false);
           dispatch(riwayatAction.clearLesDetail());
+        }}
+      />
+      <DetailCoinHistoryComponent
+        visible={visibleHistoryCoin}
+        idHistoryCoin={idHistoryCoin}
+        dismiss={() => {
+          setIdHistoryCoin('');
+          setVisibleHistoryCoin(false);
+          dispatch(riwayatAction.clearCoinDetail());
         }}
       />
       <HeaderComponent auth={'login'} setTab={e => setBar(e)} />

@@ -3,7 +3,7 @@ import http from '../../helpers/http';
 export default {
   getCart: (page, limit) => ({
     type: 'CART_GET',
-    payload: http.get(`v1/cart?page=${page}&limit=${limit}`),
+    payload: http.get(`v1/cart?page=${page}&limit=${limit}&status=success`),
   }),
   cartCheck: data => ({
     type: 'CART_CHECK',
