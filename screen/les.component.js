@@ -96,12 +96,7 @@ export const LesScreen = ({route, navigation}) => {
 
   const setDetailTutor = item => {
     dispatch(publicAction.getDetailTutor(item));
-    navigation.navigate('DetailTutor', {
-      typeParam: typeParam,
-      qcurricullum: qcurricullum,
-      qgrade: qgrade,
-      qsubject: qsubject,
-    });
+    navigation.navigate('DetailTutor');
   };
 
   const renderLes = ({item}) => (

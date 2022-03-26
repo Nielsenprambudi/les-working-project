@@ -53,7 +53,11 @@ export default {
   }),
   getWishlist: (page, limit) => ({
     type: 'WISHLIST',
-    payload: http.get(`v1/wishlist/?page=${page}&limit=${limit}`),
+    payload: http.get(`v1/wishlist?page=${page}&limit=${limit}`),
+  }),
+  deleteWishlist: id => ({
+    type: 'WISHLIST_DELETE',
+    payload: http.delete(`v1/wishlist/${id}`),
   }),
   visible: data => ({
     type: 'VISIBLE_PUBLIC',
@@ -79,5 +83,8 @@ export default {
   }),
   clearWishlist: () => ({
     type: 'CLEAR_WISHLIST',
+  }),
+  clearWishlistDelete: () => ({
+    type: 'CLEAR_WISHLIST_DELETE',
   }),
 };

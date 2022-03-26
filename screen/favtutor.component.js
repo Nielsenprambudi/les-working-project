@@ -89,12 +89,7 @@ export const FavTutorScreen = ({route, navigation}) => {
 
   const setDetailTutor = item => {
     dispatch(publicAction.getDetailTutor(item));
-    navigation.navigate('DetailTutor', {
-      typeParam: '',
-      qcurricullum: '',
-      qgrade: '',
-      qsubject: '',
-    });
+    navigation.navigate('DetailTutor');
   };
 
   const renderLes = ({item}) => (

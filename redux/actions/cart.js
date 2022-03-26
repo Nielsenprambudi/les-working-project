@@ -33,6 +33,10 @@ export default {
     type: 'ADD_SCHEDULE',
     payload: http.post('v1/schedule', data),
   }),
+  addWishlist: data => ({
+    type: 'ADD_WISHLIST',
+    payload: http.post('v1/wishlist', data),
+  }),
   dataSchedule: data => ({
     type: 'SCHEDULE_LENGTH',
     payload: data,
@@ -51,6 +55,9 @@ export default {
   }),
   clearRequest: () => ({
     type: 'CLEAR_REQUEST',
+  }),
+  clearWishlist: () => ({
+    type: 'CLEAR_WISHLIST',
   }),
   clearDelete: () => ({
     type: 'CLEAR_DELETE',

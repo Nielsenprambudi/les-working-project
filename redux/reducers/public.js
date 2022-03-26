@@ -2,6 +2,7 @@ const initialState = {
   alertMsg: '',
   alertMsgErr: '',
   alertMsgErrWish: '',
+  alertMsgSuccessWish: '',
   isLoadingPublic: false,
   isErrorPublic: false,
   isPublic: false,
@@ -13,6 +14,9 @@ const initialState = {
   isLoadingWish: false,
   isErrorWish: false,
   isWish: true,
+  isLoadingWishDelete: false,
+  isErrorWishDelete: false,
+  isWishDelete: false,
   isLoadingFav: false,
   isErrorFav: false,
   isFav: true,
@@ -133,6 +137,30 @@ export default (state = initialState, action) => {
         limitWish: action.payload.data.limitPage,
         currentPageWish: action.payload.data.currentPage,
         nextPageWish: action.payload.data.nextPage,
+      };
+    }
+    case 'WISHLIST_DELETE_PENDING': {
+      return {
+        ...state,
+        isLoadingWishDelete: true,
+      };
+    }
+    case 'WISHLIST_DELETE_REJECTED': {
+      return {
+        ...state,
+        isLoadingWishDelete: false,
+        isErrorWishDelete: true,
+        isWishDelete: false,
+        alertMsgErrWish: action.payload.data.message,
+      };
+    }
+    case 'WISHLIST_DELETE_FULFILLED': {
+      return {
+        ...state,
+        isLoadingWishDelete: false,
+        isErrorWishDelete: false,
+        isWishDelete: true,
+        alertMsgSuccessWish: 'Berhasil menghapus wishlist...',
       };
     }
     case 'GET_FAVOURITE_TUTOR_PENDING': {
@@ -310,7 +338,26 @@ export default (state = initialState, action) => {
         isErrorWish: false,
         isLoadingWish: false,
         isWish: false,
+        isLoadingWishDelete: false,
+        isErrorWishDelete: false,
+        isWishDelete: false,
         alertMsgErrWish: '',
+        alertMsgSuccessWish: '',
+        wishlist: [],
+        totalDataWish: 0,
+        limitWish: 10,
+        currentPageWish: 1,
+        nextPageWish: 0,
+      };
+    }
+    case 'CLEAR_WISHLIST_DELETE': {
+      return {
+        ...state,
+        isErrorWishDelete: false,
+        isLoadingWishDelete: false,
+        isWishDelete: false,
+        alertMsgErrWish: '',
+        alertMsgSuccessWish: '',
       };
     }
     default: {

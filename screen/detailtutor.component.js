@@ -46,9 +46,8 @@ const global = require('../styles/global');
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
-export const DetailTutorScreen = ({route, navigation}) => {
+export const DetailTutorScreen = ({navigation}) => {
   const dispatch = useDispatch();
-  const {typeParam, qcurricullum, qgrade, qsubject} = route.params;
   const auth = useSelector(state => state.auth);
   const [month, setMonth] = useState(0);
   const [toast, setToast] = useState(false);
@@ -70,8 +69,16 @@ export const DetailTutorScreen = ({route, navigation}) => {
     isFav,
     alertMsgErr,
   } = useSelector(state => state?.publicBeranda);
-  const {isErrorCartAdd, isLoadingCartAdd, isCartAdd, alertMsgError} =
-    useSelector(state => state?.cart);
+  const {
+    isErrorCartAdd,
+    isLoadingCartAdd,
+    isCartAdd,
+    isLoadingAddWishlist,
+    isErrorAddWishlist,
+    isAddWishlist,
+    alertMsgError,
+    alertMsgSuccess,
+  } = useSelector(state => state?.cart);
   const [favourite, setFavourite] = useState(false);
   const navigateBack = () => {
     navigation.goBack();
@@ -187,9 +194,22 @@ export const DetailTutorScreen = ({route, navigation}) => {
     }
   };
 
+  const wishlist = item => {
+    dispatch(
+      cartAction.addWishlist({
+        teacherId: item?.teacherId,
+        teacherSubjectId: cardSubjectId,
+        availabilityHoursId: item?.id,
+        typeCourse: type,
+        dateTimeStart: item?.dateSort + ' ' + item?.timeStart,
+        dateTimeEnd: item?.dateSort + ' ' + item?.timeEnd,
+      }),
+    );
+  };
+
   const renderJadwal = ({item}) => (
     // <TouchableOpacity onPress={() => navigateToDetail(item)}>
-    <TouchableOpacity>
+    <Layout>
       <Divider style={[global.marginHorizontalDefault]} />
       <Layout
         style={[
@@ -205,11 +225,15 @@ export const DetailTutorScreen = ({route, navigation}) => {
           </Text>
         </Layout>
         <Layout style={{marginLeft: width * 0.3}}>
-          <Icon
-            name="heart-outline"
-            fill={orange}
-            style={{width: width * 0.05, height: width * 0.05}}
-          />
+          <TouchableOpacity
+            disabled={isLoadingAddWishlist}
+            onPress={() => wishlist(item)}>
+            <Icon
+              name="heart-outline"
+              fill={orange}
+              style={{width: width * 0.08, height: width * 0.08}}
+            />
+          </TouchableOpacity>
         </Layout>
       </Layout>
       <Layout style={{flexDirection: 'row'}}>
@@ -263,7 +287,7 @@ export const DetailTutorScreen = ({route, navigation}) => {
         )}
         <TouchableOpacity
           onPress={() => addCart(item)}
-          disabled={cardSubjectId == ''}
+          disabled={cardSubjectId == '' || isLoadingCartAdd}
           style={[
             global.cardButton,
             {
@@ -287,7 +311,7 @@ export const DetailTutorScreen = ({route, navigation}) => {
           </Text>
         </TouchableOpacity>
       </Layout>
-    </TouchableOpacity>
+    </Layout>
   );
 
   const setSelectedMonth = i => {
@@ -334,6 +358,7 @@ export const DetailTutorScreen = ({route, navigation}) => {
       setFavourite(false);
     }
     dispatch(publicAction.clearFavourite());
+    dispatch(publicAction.clearWishlist());
     dispatch(cartAction.clearAdd());
   };
 
@@ -381,15 +406,17 @@ export const DetailTutorScreen = ({route, navigation}) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#FFFFFF'}}>
       <ModalComponent
-        visible={isErrorFav || isErrorCartAdd}
+        visible={isErrorFav || isErrorCartAdd || isErrorAddWishlist}
         dismiss={() => dismissModal()}
         msg={alertMsgErr || alertMsgError}
       />
       <ModalComponent
-        visible={isCartAdd}
+        visible={isCartAdd || isAddWishlist}
         dismiss={() => dismissModal()}
         msg={
-          'Hai...Terima kasih sudah beli kelas, selanjutnya lakukan checkout dan pembayaran ya'
+          isCartAdd
+            ? 'Hai...Terima kasih sudah beli kelas, selanjutnya lakukan checkout dan pembayaran ya'
+            : alertMsgSuccess
         }
       />
       <ModalComponent

@@ -25,6 +25,9 @@ const initialState = {
   isLoadingAddSchedule: false,
   isErrorAddSchedule: false,
   isAddSchedule: false,
+  isLoadingAddWishlist: false,
+  isErrorAddWishlist: false,
+  isAddWishlist: false,
   dataConfirm: [],
   cartConfirmList: [],
   dataSchedule: '',
@@ -160,8 +163,32 @@ export default (state = initialState, action) => {
         isLoadingCartAdd: false,
         isErrorCartAdd: false,
         isCartAdd: true,
-        data: action.payload.data.data,
+        // data: action.payload.data.data,
         alertMsgSuccess: 'Berhasil menambahkan jadwal les...',
+      };
+    }
+    case 'ADD_WISHLIST_PENDING': {
+      return {
+        ...state,
+        isLoadingAddWishlist: true,
+      };
+    }
+    case 'ADD_WISHLIST_REJECTED': {
+      return {
+        ...state,
+        isLoadingAddWishlist: false,
+        isErrorAddWishlist: true,
+        isAddWishlist: false,
+        alertMsgError: action.payload.response.data.message,
+      };
+    }
+    case 'ADD_WISHLIST_FULFILLED': {
+      return {
+        ...state,
+        isLoadingAddWishlist: false,
+        isErrorAddWishlist: false,
+        isAddWishlist: true,
+        alertMsgSuccess: 'Berhasil menambahkan wishlist...',
       };
     }
     case 'ADD_SCHEDULE_PENDING': {
@@ -225,6 +252,8 @@ export default (state = initialState, action) => {
         isErrorCart: false,
         isErrorCartAdd: false,
         isCartAdd: false,
+        alertMsgError: '',
+        alertMsgSuccess: '',
       };
     }
     case 'CLEAR_ADD_SCHEDULE': {
@@ -269,6 +298,16 @@ export default (state = initialState, action) => {
         subtotal: 0,
         dataSchedule: '',
         minimumPurchase: 0,
+      };
+    }
+    case 'CLEAR_WISHLIST': {
+      return {
+        ...state,
+        isLoadingAddWishlist: false,
+        isErrorAddWishlist: false,
+        isAddWishlist: false,
+        alertMsgError: '',
+        alertMsgSuccess: '',
       };
     }
     case 'CLEAR_CONFIRM_CART': {

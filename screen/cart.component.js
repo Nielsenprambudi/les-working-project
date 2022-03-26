@@ -45,6 +45,7 @@ import {
   green,
   blue,
   grey,
+  greydark,
 } from '../helpers/constant';
 import DocumentPicker, {
   DocumentPickerOptions,
@@ -71,7 +72,11 @@ export const CartScreen = ({navigation}) => {
     isErrorWish,
     isLoadingWish,
     isWish,
+    isErrorWishDelete,
+    isLoadingWishDelete,
+    isWishDelete,
     alertMsgErrWish,
+    alertMsgSuccessWish,
     currentPageWish,
     nextPageWish,
     limitWish,
@@ -102,8 +107,6 @@ export const CartScreen = ({navigation}) => {
   const navigateBack = () => {
     navigation.goBack();
   };
-  const [cardSubjectId, setCardSubjectId] = useState('');
-  const [subjects, setSubjects] = useState([]);
 
   const BackIcon = props => (
     <Icon {...props} name="arrow-back" fill="#ffffff" />
@@ -118,6 +121,23 @@ export const CartScreen = ({navigation}) => {
       dispatch(cartAction.getCart(1, 10));
     } else {
       dispatch(cartAction.clearDelete());
+    }
+    if (isErrorWishDelete) {
+      dispatch(publicAction.clearWishlistDelete());
+    }
+    if (isErrorCartAdd) {
+      dispatch(cartAction.clearAdd());
+    }
+    if (isCartAdd) {
+      setSelectedTab(1);
+      dispatch(cartAction.clear());
+      dispatch(cartAction.getCart(1, 10));
+      dispatch(publicAction.clearWishlist());
+      dispatch(publicAction.getWishlist(1, 10));
+    }
+    if (isWishDelete) {
+      dispatch(publicAction.clearWishlist());
+      dispatch(publicAction.getWishlist(1, 10));
     }
   };
 
@@ -454,72 +474,136 @@ export const CartScreen = ({navigation}) => {
     </Layout>
   );
 
+  const deleteWishlist = id => {
+    dispatch(publicAction.deleteWishlist(id));
+  };
+
+  const addCartWishlist = wish => {
+    let xdate = wish?.date.split(',');
+    let xtime = wish?.time.split('-');
+    dispatch(
+      cartAction.addCart({
+        teacherId: wish?.teacherId,
+        typeCourse: wish?.typeCourse,
+        startTime: xdate[1] + ' ' + xtime[0],
+        endTime: xdate[1] + ' ' + xtime[1],
+        teacherSubjectId: wish?.teacherSubjectId,
+        availabilityHoursId: wish?.availabilityHoursId,
+        requestMaterial: '',
+        imageMaterial: '',
+      }),
+    );
+  };
+
   const renderJadwal = ({item}) => (
-    <TouchableOpacity>
-      <Divider style={[global.marginHorizontalDefault]} />
-      <Layout
-        style={[
-          global.marginHorizontalDefault,
-          {paddingVertical: width * 0.02, flexDirection: 'row'},
-        ]}>
-        <Layout>
-          <Text category="h6" style={[global.normalFont, {fontWeight: 'bold'}]}>
-            {FORMATDATE(item?.date)}
-          </Text>
-          <Text category="c2" style={[global.captionFont]}>
-            {item?.timeStart + ' - ' + item?.timeEnd}
-          </Text>
-        </Layout>
-        <Layout style={{marginLeft: width * 0.3}}>
-          <Icon
-            name="heart-outline"
-            fill={orange}
-            style={{width: width * 0.05, height: width * 0.05}}
-          />
-        </Layout>
-      </Layout>
-      <Layout style={{flexDirection: 'row'}}>
-        <Icon
-          name="heart"
-          fill="red"
-          style={{width: 15, height: 15, margin: width * 0.02}}
-        />
-        <Text category="c2" style={[global.captionFont]}>
-          4 orang menambahkan ini ke wishlist
-        </Text>
-      </Layout>
-      <Layout
-        style={[
-          global.marginHorizontalDefault,
-          {flexDirection: 'row', marginVertical: width * 0.02},
-        ]}>
-        <TouchableOpacity
-          // onPress={() => addCart(item)}
-          disabled={cardSubjectId == ''}
-          style={[
-            global.cardButton,
-            {
-              borderRadius: width * 0.05,
-              paddingHorizontal: width * 0.08,
-            },
-          ]}>
+    <Layout style={{flexDirection: 'column'}}>
+      <Layout style={global.marginHorizontalDefault}>
+        <Layout style={{flexDirection: 'row'}}>
           <Text
-            category="c2"
+            category="h5"
             style={[
-              global.captionFont,
-              global.greenFontColor,
-              {fontSize: width * 0.03},
+              global.normalFont,
+              global.marginHorizontalDefault,
+              {fontWeight: 'bold'},
             ]}>
+            {item?.teacher}{' '}
             <Icon
-              name="shopping-cart"
-              fill="#459c8e"
-              style={{width: width * 0.04, height: width * 0.04}}
-            />{' '}
-            Beli Kelas
+              name="arrow-ios-forward-outline"
+              style={{width: width * 0.05, height: width * 0.05}}
+              fill={blue}
+            />
           </Text>
-        </TouchableOpacity>
+        </Layout>
       </Layout>
-    </TouchableOpacity>
+      <Divider style={[global.marginHorizontalDefault]} />
+      <Layout>
+        {item?.wishlistItems.length > 0 &&
+          item?.wishlistItems.map((wish, y) => (
+            <Layout style={{marginHorizontal: width * 0.02}} key={y}>
+              <Layout style={{flexDirection: 'row'}}>
+                <Layout
+                  style={[
+                    global.marginHorizontalDefault,
+                    {
+                      flexDirection: 'column',
+                    },
+                  ]}>
+                  <Text category="p1" style={global.normalFont}>
+                    {wish?.date}
+                  </Text>
+                  <Text category="c2" style={global.captionFont}>
+                    {wish?.time}
+                  </Text>
+                  <Text
+                    category="p1"
+                    style={[
+                      global.normalFont,
+                      {fontWeight: 'bold', paddingBottom: width * 0.02},
+                    ]}>
+                    {FORMATPRICE(wish?.price)}
+                  </Text>
+                </Layout>
+                <Layout
+                  style={{
+                    flexDirection: 'column',
+                    paddingLeft: width * 0.02,
+                  }}>
+                  <Text
+                    category="c2"
+                    style={[global.captionFont, {textAlign: 'right'}]}>
+                    {wish?.subject.toLowerCase()}
+                  </Text>
+                  <Text
+                    category="c2"
+                    style={[global.captionFont, {textAlign: 'right'}]}>
+                    {wish?.typeCourse}
+                  </Text>
+                </Layout>
+                <TouchableOpacity
+                  onPress={() => deleteWishlist(wish?.wishlistItemId)}
+                  disabled={isLoadingWishDelete}
+                  style={{paddingLeft: width * 0.02}}>
+                  <Icon
+                    name="trash-outline"
+                    style={{width: width * 0.08, height: width * 0.08}}
+                    fill={greydark}
+                  />
+                </TouchableOpacity>
+              </Layout>
+
+              <Layout
+                style={{
+                  marginVertical: width * 0.04,
+                }}>
+                <TouchableOpacity
+                  onPress={() => addCartWishlist(wish)}
+                  disabled={isLoadingCartAdd}
+                  style={[
+                    {
+                      borderRadius: width * 0.05,
+                      paddingHorizontal: width * 0.05,
+                      paddingVertical: width * 0.02,
+                      borderWidth: 1,
+                      borderColor: green,
+                      marginLeft: width * 0.5,
+                    },
+                  ]}>
+                  <Text
+                    category="c2"
+                    style={[
+                      global.captionFont,
+                      global.greenFontColor,
+                      {fontSize: width * 0.03, textAlign: 'center'},
+                    ]}>
+                    Beli Kelas
+                  </Text>
+                </TouchableOpacity>
+              </Layout>
+              <Divider style={[global.marginHorizontalDefault]} />
+            </Layout>
+          ))}
+      </Layout>
+    </Layout>
   );
 
   const RightAction = () => (
@@ -566,19 +650,19 @@ export const CartScreen = ({navigation}) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#FFFFFF'}}>
       <ModalComponent
-        visible={isErrorCartAdd || isErrorAddSchedule}
+        visible={
+          isErrorCartAdd ||
+          isErrorAddSchedule ||
+          isErrorCartDelete ||
+          isErrorWishDelete
+        }
         dismiss={() => dismissModal()}
-        msg={alertMsgError}
+        msg={alertMsgError || alertMsgErrWish}
       />
       <ModalComponent
-        visible={isErrorCartDelete}
+        visible={isCartDelete || isAddSchedule || isWishDelete || isCartAdd}
         dismiss={() => dismissModal()}
-        msg={alertMsgError}
-      />
-      <ModalComponent
-        visible={isCartDelete || isAddSchedule}
-        dismiss={() => dismissModal()}
-        msg={alertMsgSuccess}
+        msg={alertMsgSuccess || alertMsgSuccessWish}
       />
       <TopNavigation
         style={{backgroundColor: blue}}
@@ -646,6 +730,7 @@ export const CartScreen = ({navigation}) => {
               onEndReachedThreshold={0.2}
               onEndReached={loadMore}
               onRefresh={doRefresh}
+              contentContainerStyle={{paddingBottom: width}}
               refreshing={false}
               ListFooterComponent={
                 isLoadingWish && (

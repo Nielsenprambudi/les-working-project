@@ -74,7 +74,7 @@ export const FilterScreen = ({route, navigation}) => {
 
   const resetFilter = () => {
     dispatch(filterAction.clear());
-    dispatch(filterAction.clearGradeSubject);
+    dispatch(filterAction.clearGradeSubject());
     setTutorName('');
     setDataCurriculum([]);
     setCurriculumId('');
