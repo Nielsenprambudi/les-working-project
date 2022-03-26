@@ -1,13 +1,14 @@
 import http from '../../helpers/http';
 
 export default {
-  getLesku: (token, data,page,limit) => ({
-    type: 'LESKU_GET',
-    payload: http(token).post(`api/lesku?page=${page}&limit=${limit}`, data),
+  getSchedule: (page, limit) => ({
+    type: 'GET_SCHEDULE',
+    payload: http.get(`v1/schedule/my?page=${page}&limit=${limit}`),
+    // payload: http.post('v1/schedule/my'),
   }),
-  getMateri: (token,id) => ({
-    type:'GET_MATERI',
-    payload:http(token).get(`api/requestmateri/${id}`)
+  getMateri: (token, id) => ({
+    type: 'GET_MATERI',
+    payload: http(token).get(`api/requestmateri/${id}`),
   }),
   addMateri: (token, data) => ({
     type: 'ADD_MATERI',
@@ -18,6 +19,9 @@ export default {
   }),
   clear: () => ({
     type: 'CLEAR_LESKU',
+  }),
+  clearSchedule: () => ({
+    type: 'CLEAR_SCHEDULE',
   }),
   clearReq: () => ({
     type: 'CLEAR_REQ',

@@ -25,6 +25,7 @@ import {VerifyNumberScreen} from '../screen/verifynumber.component';
 import {RegisterNumberScreen} from '../screen/registernumber.component';
 import {CoinScreen} from '../screen/coin.component';
 import {CoinCheckoutScreen} from '../screen/coincheckout.component';
+import {LesRoomScreen} from '../screen/lesroom.component';
 import {useSelector, useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from '../helpers/http';
@@ -76,6 +77,7 @@ const HomeNavigator = () => (
     <Screen name="Tutorial" component={TutorialScreen} />
     <Screen name="Coin" component={CoinScreen} />
     <Screen name="CoinCheckout" component={CoinCheckoutScreen} />
+    <Screen name="LesRoom" component={LesRoomScreen} />
   </Navigator>
 );
 

@@ -34,6 +34,7 @@ import {FORMATPRICE, grey, greydark} from '../helpers/constant';
 import berandaAction from './../redux/actions/beranda';
 import studentAction from './../redux/actions/student';
 import riwayatAction from './../redux/actions/riwayat';
+import leskuAction from '../redux/actions/lesku';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DetailLesHistoryComponent} from '../component/detailLesHistory.component';
 import {DetailCoinHistoryComponent} from '../component/detailCoinHistory.component';
@@ -50,22 +51,23 @@ export const HomeScreen = ({navigation}) => {
   const {firstWalk, dataSlider} = useSelector(state => state.beranda);
   const {
     isLoadingRiwayat,
-    isErrorRiwayat,
-    isRiwayat,
     dataRiwayat,
     limit,
     totalData,
-    currentPage,
     nextPage,
     isLoadingRiwayatCoin,
-    isErrorRiwayatCoin,
-    isRiwayatCoin,
     dataRiwayatCoin,
     limitCoin,
     totalDataCoin,
-    currentPageCoin,
     nextPageCoin,
   } = useSelector(state => state.riwayat);
+  const {
+    isLoadingSchedule,
+    dataSchedule,
+    limitSchedule,
+    totalDataSchedule,
+    nextPageSchedule,
+  } = useSelector(state => state.lesku);
   const auth = useSelector(state => state.auth);
   const {data, isStudent} = useSelector(state => state.student);
   const [tabBar, setTabBar] = useState(0);
@@ -80,14 +82,10 @@ export const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     dispatch(berandaAction.getSliders());
-    dispatch(riwayatAction.clearLes());
-    dispatch(riwayatAction.clearCoin());
     if (auth?.token) {
       http.defaults.headers.common.Authorization = 'Bearer ' + auth?.token;
       dispatch(studentAction.getStudent());
       dispatch(studentAction.getStudentDetail());
-      dispatch(riwayatAction.getRiwayat(1, 10));
-      dispatch(riwayatAction.getRiwayatCoin(1, 10));
     }
     if (firstWalk === null) {
       dispatch(berandaAction.setWalkthrough(true));
@@ -105,6 +103,16 @@ export const HomeScreen = ({navigation}) => {
     try {
       await Share.share({
         message: `Yukk, gabung di Sebis Les dan gunakan kode ${data?.referralCode.toUpperCase()} untuk mendapatkan diskon khusus`,
+      });
+    } catch (error) {
+      console.log('error share', error);
+    }
+  };
+
+  const shareLinkLes = async (subject, tutor, date, time, link) => {
+    try {
+      await Share.share({
+        message: `${subject}\n${tutor}\n${date}\n${time}\n\n${link}`,
       });
     } catch (error) {
       console.log('error share', error);
@@ -173,6 +181,18 @@ export const HomeScreen = ({navigation}) => {
 
   const setBar = e => {
     setTabBar(e);
+    if (e === 2 && auth?.token) {
+      dispatch(riwayatAction.clearLes());
+      dispatch(riwayatAction.getRiwayat(1, 10));
+      dispatch(riwayatAction.clearCoin());
+      dispatch(riwayatAction.getRiwayatCoin(1, 10));
+      dispatch(leskuAction.clearSchedule());
+      dispatch(leskuAction.getSchedule(1, 10));
+    }
+  };
+
+  const setTheOrder = i => {
+    setOrderIndex(i);
   };
 
   const doRefreshRiwayat = () => {
@@ -196,6 +216,209 @@ export const HomeScreen = ({navigation}) => {
       dispatch(riwayatAction.getRiwayatCoin(nextPageCoin, limitCoin));
     }
   };
+
+  const doRefreshSchedule = () => {
+    dispatch(leskuAction.clearSchedule());
+    dispatch(leskuAction.getSchedule(1, 10));
+  };
+
+  const loadMoreSchedule = () => {
+    if (dataSchedule && dataSchedule.length < totalDataSchedule) {
+      dispatch(leskuAction.getSchedule(nextPageSchedule, limitSchedule));
+    }
+  };
+
+  const RenderSchedule = ({item}) => (
+    <Layout>
+      <Layout
+        style={[
+          global.marginHorizontalDefault,
+          {flexDirection: 'row', paddingVertical: width * 0.03},
+        ]}>
+        <Image
+          source={require('./../assets/sebis_les.png')}
+          style={{
+            width: width * 0.2,
+            height: width * 0.2,
+          }}
+          resizeMode="cover"
+        />
+        <Layout style={{paddingLeft: width * 0.05}}>
+          <Text
+            category="p1"
+            style={[global.normalFont, {fontWeight: 'bold', color: blue}]}>
+            {item?.subject}
+          </Text>
+          <Text category="c1" style={[global.normalFont, {color: greydark}]}>
+            {item?.date}
+          </Text>
+          <Text
+            category="c2"
+            style={[global.captionFont, {color: greydark, fontWeight: 'bold'}]}>
+            {item?.time}
+          </Text>
+          <Text category="p2" style={[global.normalFont]}>
+            {item?.teacher}
+          </Text>
+          {item?.requestMaterial == null || item?.imageMaterial == null ? (
+            <TouchableOpacity
+              // onPress={() => navigateToDetails(cart, item)}
+              disabled={item?.convertStatus == 'expire'}
+              style={{
+                borderColor: item?.convertStatus == 'expire' ? grey : green,
+                borderWidth: 1,
+              }}>
+              <Text
+                category="c1"
+                style={
+                  item?.convertStatus == 'expire'
+                    ? [global.captionFont, {color: grey, textAlign: 'center'}]
+                    : [global.captionFont, {color: green, textAlign: 'center'}]
+                }>
+                Request Materi
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <Layout>
+              <Text category="c1" style={[global.captionFont]}>
+                Request Materi :
+              </Text>
+              <Text
+                category="c1"
+                style={[
+                  global.greenFontColor,
+                  {paddingVertical: width * 0.02},
+                ]}>
+                {item?.requestMaterial}
+              </Text>
+              <Layout
+                style={{
+                  padding: 2,
+                }}>
+                <Text category="c1" style={[global.captionFont]}>
+                  Dokumen / foto :
+                </Text>
+                <Text
+                  category="c1"
+                  style={[global.captionFont, {color: green}]}>
+                  {item?.imageMaterial == null ? 'Tidak tersedia' : 'Tersedia'}
+                </Text>
+              </Layout>
+              <Avatar
+                size="large"
+                source={{uri: publicUrl.API_URL + item?.imageMaterial}}
+                shape="square"
+              />
+            </Layout>
+          )}
+        </Layout>
+        <Layout style={{paddingLeft: width * 0.05, maxWidth: width * 0.3}}>
+          <Text
+            category="c2"
+            style={[
+              global.captionFont,
+              {color: greydark, paddingBottom: width * 0.03},
+            ]}>
+            {item?.convertStatus}
+          </Text>
+          <Text category="c2" style={[global.captionFont, {color: greydark}]}>
+            {item?.grade}
+          </Text>
+          <Text category="c2" style={[global.captionFont, {color: greydark}]}>
+            {item?.type}
+          </Text>
+        </Layout>
+      </Layout>
+      {item?.roomIsActive === false ? (
+        <TouchableOpacity
+          // onPress={() => navigation.navigate('LesRoom', {link: item?.roomLink})}
+          style={[
+            global.cardButton,
+            {
+              borderRadius: width * 0.02,
+              borderColor: greydark,
+              backgroundColor: greydark,
+              borderWidth: 1,
+              marginHorizontal: width * 0.2,
+              marginVertical: width * 0.02,
+            },
+          ]}>
+          <Text
+            category="c1"
+            style={[
+              global.normalFont,
+              {
+                color: '#FFFFFF',
+                textAlign: 'center',
+              },
+            ]}>
+            Kelas Belum Dimulai
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <Layout style={{flexDirection: 'row'}}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('LesRoom', {link: item?.roomLink})
+            }
+            style={[
+              global.cardButton,
+              {
+                borderRadius: width * 0.02,
+                borderColor: green,
+                backgroundColor: '#FFFFFF',
+                borderWidth: 1,
+                marginVertical: width * 0.02,
+                marginLeft: width * 0.02,
+                marginRight: width * 0.01,
+                width: width * 0.8,
+              },
+            ]}>
+            <Text
+              category="c1"
+              style={[
+                global.normalFont,
+                {
+                  color: green,
+                  textAlign: 'center',
+                },
+              ]}>
+              Klik untuk mulai kelas
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              shareLinkLes(
+                item?.subject,
+                'tutor',
+                item?.date,
+                item?.time,
+                item?.roomLink,
+              )
+            }
+            style={{
+              marginVertical: width * 0.02,
+            }}>
+            <Icon
+              name="share"
+              fill={green}
+              style={{width: width * 0.08, height: width * 0.08}}
+            />
+          </TouchableOpacity>
+        </Layout>
+      )}
+      <Text
+        category="c2"
+        style={[
+          global.captionFont,
+          {color: greydark, textAlign: 'center', paddingBottom: width * 0.05},
+        ]}>
+        Link terbuka 15 menit sebelum les dimulai, siswa harus masuk kelas tepat
+        waktu, tidak ada perpanjangan waktu{' '}
+      </Text>
+      <Divider />
+    </Layout>
+  );
 
   const RenderRiwayatCoin = ({item}) => (
     <TouchableOpacity
@@ -527,145 +750,221 @@ export const HomeScreen = ({navigation}) => {
           <PromoComponent />
         </ScrollView>
       )}
-      {tabBar == 2 && (
-        <Layout>
-          <TabBar
-            selectedIndex={orderIndex}
-            onSelect={index => setOrderIndex(index)}
-            indicatorStyle={{backgroundColor: blue}}>
-            <Tab
-              title={evaprops => (
-                <Text
-                  {...evaprops}
-                  category="c1"
-                  style={[
-                    global.normalFont,
-                    {color: orderIndex === 0 ? blue : greydark},
-                  ]}>
-                  Riwayat Les
-                </Text>
-              )}
-            />
-            <Tab
-              title={evaprops => (
-                <Text
-                  {...evaprops}
-                  category="c1"
-                  style={[
-                    global.normalFont,
-                    {color: orderIndex === 1 ? blue : greydark},
-                  ]}>
-                  Riwayat Transaksi
-                </Text>
-              )}
-            />
-            <Tab
-              title={evaprops => (
-                <Text
-                  {...evaprops}
-                  category="c1"
-                  style={[
-                    global.normalFont,
-                    {color: orderIndex === 2 ? blue : greydark},
-                  ]}>
-                  Dalam Proses
-                </Text>
-              )}
-            />
-          </TabBar>
-          {orderIndex === 0 && (
-            <Layout style={{height: height, paddingTop: width * 0.05}}>
-              <FlatList
-                data={dataRiwayat}
-                renderItem={RenderRiwayat}
-                keyExtractor={(item, index) => index}
-                onEndReachedThreshold={0.2}
-                onEndReached={loadMoreRiwayat}
-                onRefresh={doRefreshRiwayat}
-                refreshing={false}
-                ListFooterComponent={
-                  isLoadingRiwayat && (
-                    <Layout
-                      style={{
-                        marginHorizontal: width * 0.5,
-                        marginVertical: width * 0.25,
-                      }}>
-                      <Spinner size="large" />
-                    </Layout>
-                  )
-                }
-                ListEmptyComponent={
-                  !isLoadingRiwayat && (
-                    <Layout>
-                      <Image
-                        source={require('./../assets/sebby-laptop.png')}
+      {tabBar == 2 &&
+        (auth?.token ? (
+          <Layout>
+            <TabBar
+              selectedIndex={orderIndex}
+              onSelect={index => setTheOrder(index)}
+              indicatorStyle={{backgroundColor: blue}}>
+              <Tab
+                title={evaprops => (
+                  <Text
+                    {...evaprops}
+                    category="c1"
+                    style={[
+                      global.normalFont,
+                      {color: orderIndex === 0 ? blue : greydark},
+                    ]}>
+                    Riwayat Les
+                  </Text>
+                )}
+              />
+              <Tab
+                title={evaprops => (
+                  <Text
+                    {...evaprops}
+                    category="c1"
+                    style={[
+                      global.normalFont,
+                      {color: orderIndex === 1 ? blue : greydark},
+                    ]}>
+                    Riwayat Transaksi
+                  </Text>
+                )}
+              />
+              <Tab
+                title={evaprops => (
+                  <Text
+                    {...evaprops}
+                    category="c1"
+                    style={[
+                      global.normalFont,
+                      {color: orderIndex === 2 ? blue : greydark},
+                    ]}>
+                    Dalam Proses
+                  </Text>
+                )}
+              />
+            </TabBar>
+            {orderIndex === 0 && (
+              <Layout style={{height: height, paddingTop: width * 0.05}}>
+                <FlatList
+                  data={dataRiwayat}
+                  renderItem={RenderRiwayat}
+                  keyExtractor={(item, index) => index}
+                  onEndReachedThreshold={0.2}
+                  onEndReached={loadMoreRiwayat}
+                  onRefresh={doRefreshRiwayat}
+                  refreshing={false}
+                  ListFooterComponent={
+                    isLoadingRiwayat && (
+                      <Layout
                         style={{
-                          width: width * 0.5,
-                          height: width * 0.5,
-                          marginHorizontal: width * 0.25,
-                          marginTop: width * 0.25,
-                        }}
-                        resizeMode="cover"
-                      />
-                      <Text
-                        category="h5"
-                        style={[
-                          global.titleFont,
-                          {textAlign: 'center', fontWeight: 'bold'},
-                        ]}>
-                        Pesan Les, Yukk!
-                      </Text>
-                    </Layout>
-                  )
-                }
-              />
-            </Layout>
-          )}
-          {orderIndex === 1 && (
-            <Layout style={{height: height, paddingTop: width * 0.05}}>
-              <FlatList
-                data={dataRiwayatCoin}
-                renderItem={RenderRiwayatCoin}
-                keyExtractor={(item, index) => index}
-                onEndReachedThreshold={0.2}
-                onEndReached={loadMoreRiwayatCoin}
-                onRefresh={doRefreshRiwayatCoin}
-                refreshing={false}
-                ListFooterComponent={
-                  isLoadingRiwayatCoin && (
-                    <Layout
-                      style={{
-                        marginHorizontal: width * 0.5,
-                        marginVertical: width * 0.25,
-                      }}>
-                      <Spinner size="large" />
-                    </Layout>
-                  )
-                }
-                ListEmptyComponent={
-                  !isLoadingRiwayatCoin && (
-                    <Layout>
-                      <Image
-                        source={require('./../assets/sebby-laptop.png')}
-                        style={{width: width * 0.06, height: width * 0.06}}
-                        resizeMode="cover"
-                      />
-                      <Text
-                        category="h5"
-                        style={[
-                          global.titleFont,
-                          {textAlign: 'center', fontWeight: 'bold'},
-                        ]}>
-                        Pesan Les, Yukk!
-                      </Text>
-                    </Layout>
-                  )
-                }
-              />
-            </Layout>
-          )}
-        </Layout>
-      )}
+                          marginHorizontal: width * 0.5,
+                          marginVertical: width * 0.25,
+                        }}>
+                        <Spinner size="large" />
+                      </Layout>
+                    )
+                  }
+                  ListEmptyComponent={
+                    !isLoadingRiwayat && (
+                      <Layout>
+                        <Image
+                          source={require('./../assets/sebby-laptop.png')}
+                          style={{
+                            width: width * 0.5,
+                            height: width * 0.5,
+                            marginHorizontal: width * 0.25,
+                            marginTop: width * 0.25,
+                          }}
+                          resizeMode="cover"
+                        />
+                        <Text
+                          category="h5"
+                          style={[
+                            global.titleFont,
+                            {textAlign: 'center', fontWeight: 'bold'},
+                          ]}>
+                          Pesan Les, Yukk!
+                        </Text>
+                      </Layout>
+                    )
+                  }
+                />
+              </Layout>
+            )}
+            {orderIndex === 1 && (
+              <Layout style={{height: height, paddingTop: width * 0.05}}>
+                <FlatList
+                  data={dataRiwayatCoin}
+                  renderItem={RenderRiwayatCoin}
+                  keyExtractor={(item, index) => index}
+                  onEndReachedThreshold={0.2}
+                  onEndReached={loadMoreRiwayatCoin}
+                  onRefresh={doRefreshRiwayatCoin}
+                  refreshing={false}
+                  ListFooterComponent={
+                    isLoadingRiwayatCoin && (
+                      <Layout
+                        style={{
+                          marginHorizontal: width * 0.5,
+                          marginVertical: width * 0.25,
+                        }}>
+                        <Spinner size="large" />
+                      </Layout>
+                    )
+                  }
+                  ListEmptyComponent={
+                    !isLoadingRiwayatCoin && (
+                      <Layout>
+                        <Image
+                          source={require('./../assets/sebby-laptop.png')}
+                          style={{
+                            width: width * 0.5,
+                            height: width * 0.5,
+                            marginHorizontal: width * 0.25,
+                            marginTop: width * 0.25,
+                          }}
+                          resizeMode="cover"
+                        />
+                        <Text
+                          category="h5"
+                          style={[
+                            global.titleFont,
+                            {textAlign: 'center', fontWeight: 'bold'},
+                          ]}>
+                          Pesan Les, Yukk!
+                        </Text>
+                      </Layout>
+                    )
+                  }
+                />
+              </Layout>
+            )}
+            {orderIndex === 2 && (
+              <Layout style={{height: height, paddingTop: width * 0.05}}>
+                <FlatList
+                  data={dataSchedule}
+                  renderItem={RenderSchedule}
+                  keyExtractor={(item, index) => index}
+                  onEndReachedThreshold={0.2}
+                  onEndReached={loadMoreSchedule}
+                  onRefresh={doRefreshSchedule}
+                  contentContainerStyle={{paddingBottom: width * 0.5}}
+                  refreshing={false}
+                  ListFooterComponent={
+                    isLoadingSchedule && (
+                      <Layout
+                        style={{
+                          marginHorizontal: width * 0.5,
+                          marginVertical: width * 0.25,
+                        }}>
+                        <Spinner size="large" />
+                      </Layout>
+                    )
+                  }
+                  ListEmptyComponent={
+                    !isLoadingSchedule && (
+                      <Layout>
+                        <Image
+                          source={require('./../assets/sebby-laptop.png')}
+                          style={{
+                            width: width * 0.5,
+                            height: width * 0.5,
+                            marginHorizontal: width * 0.25,
+                            marginTop: width * 0.25,
+                          }}
+                          resizeMode="cover"
+                        />
+                        <Text
+                          category="h5"
+                          style={[
+                            global.titleFont,
+                            {textAlign: 'center', fontWeight: 'bold'},
+                          ]}>
+                          Pesan Les, Yukk!
+                        </Text>
+                      </Layout>
+                    )
+                  }
+                />
+              </Layout>
+            )}
+          </Layout>
+        ) : (
+          <Layout>
+            <Image
+              source={require('./../assets/sebby-laptop.png')}
+              style={{
+                width: width * 0.5,
+                height: width * 0.5,
+                marginHorizontal: width * 0.25,
+                marginTop: width * 0.25,
+              }}
+              resizeMode="cover"
+            />
+            <Text
+              category="h5"
+              style={[
+                global.titleFont,
+                {textAlign: 'center', fontWeight: 'bold'},
+              ]}>
+              Login terlebih dahulu untuk mendapatkan fitur les
+            </Text>
+          </Layout>
+        ))}
 
       {auth?.token && (
         <FloatingAction
