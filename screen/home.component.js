@@ -490,30 +490,34 @@ export const HomeScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <DetailLesHistoryComponent
-        visible={visibleHistoryLes}
-        idHistoryLes={idHistoryLes}
-        dismiss={() => {
-          setIdHistoryLes('');
-          setVisibleHistoryLes(false);
-          dispatch(riwayatAction.clearLesDetail());
-        }}
-        navigateHelp={() => {
-          navigation.navigate('Help');
-          setIdHistoryLes('');
-          setVisibleHistoryLes(false);
-          dispatch(riwayatAction.clearLesDetail());
-        }}
-      />
-      <DetailCoinHistoryComponent
-        visible={visibleHistoryCoin}
-        idHistoryCoin={idHistoryCoin}
-        dismiss={() => {
-          setIdHistoryCoin('');
-          setVisibleHistoryCoin(false);
-          dispatch(riwayatAction.clearCoinDetail());
-        }}
-      />
+      {visibleHistoryLes === true && (
+        <DetailLesHistoryComponent
+          visible={visibleHistoryLes}
+          idHistoryLes={idHistoryLes}
+          dismiss={() => {
+            setIdHistoryLes('');
+            setVisibleHistoryLes(false);
+            dispatch(riwayatAction.clearLesDetail());
+          }}
+          navigateHelp={() => {
+            navigation.navigate('Help');
+            setIdHistoryLes('');
+            setVisibleHistoryLes(false);
+            dispatch(riwayatAction.clearLesDetail());
+          }}
+        />
+      )}
+      {visibleHistoryCoin === true && (
+        <DetailCoinHistoryComponent
+          visible={visibleHistoryCoin}
+          idHistoryCoin={idHistoryCoin}
+          dismiss={() => {
+            setIdHistoryCoin('');
+            setVisibleHistoryCoin(false);
+            dispatch(riwayatAction.clearCoinDetail());
+          }}
+        />
+      )}
       <HeaderComponent auth={'login'} setTab={e => setBar(e)} />
       <Divider />
       {tabBar === 0 && (

@@ -33,10 +33,7 @@ import http from '../helpers/http';
 const {Navigator, Screen} = createStackNavigator();
 
 const AuthNavigator = () => (
-  <Navigator
-    headerMode="none"
-    initialRouteName="Home"
-    screenOptions={{headerShown: false}}>
+  <Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
     <Screen name="Home" component={HomeScreen} />
     <Screen name="Les" component={LesScreen} />
     <Screen name="Filter" component={FilterScreen} />
@@ -57,10 +54,7 @@ const AuthNavigator = () => (
 );
 
 const HomeNavigator = () => (
-  <Navigator
-    headerMode="none"
-    initialRouteName="Home"
-    screenOptions={{headerShown: false}}>
+  <Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
     <Screen name="Home" component={HomeScreen} />
     <Screen name="Les" component={LesScreen} />
     <Screen name="FavTutor" component={FavTutorScreen} />

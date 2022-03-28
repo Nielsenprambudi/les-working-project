@@ -18,6 +18,11 @@ const storeReftoken = async ref => {
   }
 };
 
+const checkrefreshToken = async () => {
+  const getToken = await AsyncStorage.getItem('refreshtoken');
+  return getToken;
+};
+
 const http = axios.create({
   baseURL: publicUrl.API_URL,
 });
@@ -26,15 +31,17 @@ http.interceptors.response.use(
   function (response) {
     return response;
   },
-  function (error) {
+  async function (error) {
     const originalRequest = error.config;
-    let reftoken = '';
+    var reftoken = await AsyncStorage.getItem('refreshtoken');
 
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+      console.log('check inside this');
       return http
         .post('v1/auth/refresh', {refreshToken: reftoken})
-        .then(({data}) => {
+        .then(data => {
+          console.log('check data refresh', data);
           storeToken(data?.data?.access.token);
           storeReftoken(data?.data?.refresh?.token);
           http.defaults.headers.common.Authorization =
